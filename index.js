@@ -46,7 +46,7 @@ var resolveScssPath = flatten.resolvePath = function (sassPath, includePaths) {
       return file;
     } else {
       throw new Error(
-        "Couldn't locate " + file + " ! Note that this lib only resolve files prefixed with a '_'"
+        "Couldn't locate " + file + " ! Note that this lib doesn't fancy magic import like Sass does."
       );
     }
   }
