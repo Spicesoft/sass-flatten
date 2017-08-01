@@ -12,7 +12,6 @@ var flatten = module.exports = function (data, includePath) {
 
   for (var index = 0; index < (content.length || 0); index++) {
     var node = content[index];
-
     if (isImportStatement(node)) {
       args = node.content.reduce(
         accumulate.bind(undefined, node.includePath || includePath),
@@ -31,7 +30,7 @@ var flatten = module.exports = function (data, includePath) {
     }
   }
 
-  return ast.toCSS('scss');
+  return ast.toString('scss');
 };
 
 var resolveScssPath = flatten.resolvePath = function (sassPath, includePaths) {
@@ -42,16 +41,19 @@ var resolveScssPath = flatten.resolvePath = function (sassPath, includePaths) {
   for (var index = 0; index < includePaths.length; index++) {
     // We only care about _partials.
     file = path.normalize(includePaths[index] + '/' + sassPathName + '.scss');
-    file = path.join(path.dirname(file), '_' + path.basename(file));
-
+    file = path.join(path.dirname(file), path.basename(file));
     if (fs.existsSync(file)) {
       return file;
+    } else {
+      throw new Error(
+        "Couldn't locate " + file + " ! Note that this lib only resolve files prefixed with a '_'"
+      );
     }
   }
 };
 
 function isImportStatement(node) {
-  return node.type == 'atrules' &&
+  return node.type == 'atrule' &&
     node.content[0].type == 'atkeyword' &&
     node.content[0].content[0].type == 'ident' &&
     node.content[0].content[0].content == 'import';
